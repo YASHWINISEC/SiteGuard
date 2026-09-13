@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SiteGuard AI - Construction Safety Vision & Reasoning</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --card-bg: #111827;
+      --card-border: rgba(255, 255, 255, 0.08);
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    /* Header */
+    header {
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      font-size: 1.75rem;
+      background: linear-gradient(135deg, #3b82f6, #10b981);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+    }
+
+    .brand-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge-live::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--success);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--success);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .btn-api {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+      border: 1px solid var(--card-border);
+      padding: 0.4rem 0.85rem;
+      border-radius: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-api:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 1440px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 1.5rem 2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 1024px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Glass Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Upload Zone */
+    .dropzone {
+      border: 2px dashed rgba(255, 255, 255, 0.15);
+      border-radius: 0.75rem;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--primary);
+      background: rgba(59, 130, 246, 0.06);
+    }
+
+    .dropzone-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .dropzone-text {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .dropzone-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    /* Sliders */
+    .controls-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .control-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    /* Image Preview */
+    .image-preview-container {
+      position: relative;
+      background: #000;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 360px;
+      border: 1px solid var(--card-border);
+    }
+
+    .image-preview-container img {
+      max-width: 100%;
+      max-height: 480px;
+      object-fit: contain;
+    }
+
+    .placeholder-view {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    /* Detections List */
+    .detections-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+
+    .detection-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 0.85rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 0.5rem;
+      border-left: 4px solid var(--primary);
+      font-size: 0.85rem;
+    }
+
+    .detection-item.violation {
+      border-left-color: var(--danger);
+      background: rgba(239, 68, 68, 0.08);
+    }
+
+    .tag-name {
+      font-weight: 600;
+    }
+
+    .tag-conf {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Part B Q&A Section */
+    .qa-box {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .preset-questions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .pill-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 0.3rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pill-btn:hover {
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--primary);
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+
+    .input-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .input-field {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--card-border);
+      border-radius: 0.5rem;
+      padding: 0.65rem 1rem;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-field:focus {
+      border-color: var(--primary);
+    }
+
+    .btn-submit {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 0.65rem 1.25rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Reasoning Response Card */
+    .answer-card {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--card-border);
+      border-radius: 0.75rem;
+      padding: 1rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .answer-text {
+      font-size: 0.95rem;
+      font-weight: 500;
+      line-height: 1.6;
+    }
+
+    .trace-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-top: 0.5rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--card-border);
+    }
+
+    .trace-step {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.02);
+      padding: 0.4rem 0.6rem;
+      border-radius: 0.35rem;
+    }
+
+    .trace-step span {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--card-border);
+      padding: 1rem 2rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">🛡️</div>
+      <div>
+        <div class="brand-title">SiteGuard AI</div>
+        <div class="brand-subtitle">Constrained Vision & Reasoning API 2.0.0</div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <span class="badge badge-live">Model: best.pt (Active)</span>
+      <a href="/docs" target="_blank" class="btn-api">⚡ Swagger API Docs</a>
+      <a href="/redoc" target="_blank" class="btn-api">📖 ReDoc</a>
+    </div>
+  </header>
+
+  <!-- Main Dual-Column Dashboard -->
+  <main>
+
+    <!-- Left Column: Part A Detection Canvas -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📷 Part A: Vision Object Detection</div>
+        <span id="latencyBadge" style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">Latency: -- ms</span>
+      </div>
+
+      <!-- Drag & Drop Upload Zone -->
+      <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+        <div class="dropzone-icon">🏗️</div>
+        <div class="dropzone-text">Click or Drag & Drop Site Image</div>
+        <div class="dropzone-sub">Supports JPG, PNG, WEBP, BMP (Safety Site Photos)</div>
+        <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,image/bmp" style="display: none" onchange="handleFile(this.files[0])" />
+      </div>
+
+      <!-- Sensitivity Controls -->
+      <div class="controls-grid">
+        <div class="control-group">
+          <div class="control-label">
+            <span>Confidence Threshold</span>
+            <span id="confVal">0.35</span>
+          </div>
+          <input type="range" id="confSlider" min="0.1" max="0.9" step="0.05" value="0.35" oninput="document.getElementById('confVal').innerText = this.value; if(currentFile) runDetection();">
+        </div>
+        <div class="control-group">
+          <div class="control-label">
+            <span>IoU (NMS) Threshold</span>
+            <span id="iouVal">0.45</span>
+          </div>
+          <input type="range" id="iouSlider" min="0.1" max="0.9" step="0.05" value="0.45" oninput="document.getElementById('iouVal').innerText = this.value; if(currentFile) runDetection();">
+        </div>
+      </div>
+
+      <!-- Annotated Canvas Preview -->
+      <div class="image-preview-container">
+        <img id="annotatedImage" style="display: none;" alt="Annotated Site Frame" />
+        <div id="placeholderText" class="placeholder-view">
+          Upload a construction photo to inspect PPE compliance & danger perimeters.
+        </div>
+      </div>
+
+      <!-- Detections Breakdown -->
+      <div class="card-header" style="border: none; padding-bottom: 0;">
+        <div class="card-title" style="font-size: 0.9rem;">🎯 Extracted Bounding Boxes (<span id="detCount">0</span>)</div>
+      </div>
+      <div class="detections-list" id="detectionsList">
+        <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 1rem;">No detections yet</div>
+      </div>
+    </div>
+
+    <!-- Right Column: Part B Natural Language Reasoning -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🧠 Part B: Zero-Framework Reasoning Layer</div>
+        <span id="guardrailBadge" class="badge" style="display: none;">Guardrail Passed</span>
+      </div>
+
+      <div class="qa-box">
+        <div style="font-size: 0.85rem; color: var(--text-muted);">
+          Ask natural-language questions about site compliance, worker head protection, or 10ft heavy equipment proximity:
+        </div>
+
+        <!-- Quick Question Suggestions -->
+        <div class="preset-questions">
+          <button class="pill-btn" onclick="setQuestion('Are all workers wearing hardhats and safety vests?')">👷 Helmet & Vest Compliance</button>
+          <button class="pill-btn" onclick="setQuestion('How many workers are present on the construction site?')">🔢 Worker Count</button>
+          <button class="pill-btn" onclick="setQuestion('Is any worker within 10 feet of heavy equipment?')">🚜 Equipment Proximity</button>
+          <button class="pill-btn" onclick="setQuestion('What is the weather forecast today?')">🚫 Out of Scope Test</button>
+        </div>
+
+        <!-- Question Input Bar -->
+        <div class="input-row">
+          <input type="text" id="questionInput" class="input-field" placeholder="e.g. Do they wear any helmet?" onkeydown="if(event.key==='Enter') askQuestion();" />
+          <button id="askBtn" class="btn-submit" onclick="askQuestion()">
+            <span>Ask</span> ➔
+          </button>
+        </div>
+
+        <!-- Synthesized Reasoning Output Card -->
+        <div class="answer-card" id="answerCard" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span id="intentTag" class="badge" style="background: rgba(59, 130, 246, 0.15); color: var(--primary); border-color: rgba(59, 130, 246, 0.3);">Intent: PPE_COMPLIANCE</span>
+            <span id="qualityScoreTag" style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">Quality: 100%</span>
+          </div>
+
+          <div id="answerContent" class="answer-text"></div>
+
+          <!-- Reasoning Trace Steps -->
+          <div class="trace-steps" id="traceContainer"></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    SiteGuard AI • Pre-Hackathon Screening Round 1 • RT-DETR Vision & Structured Safety Reasoning API
+  </footer>
+
+  <script>
+    let currentFile = null;
+
+    // Drag and drop handling
+    const dropzone = document.getElementById('dropzone');
+    ['dragenter', 'dragover'].forEach(name => {
+      dropzone.addEventListener(name, (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+    });
+    ['dragleave', 'drop'].forEach(name => {
+      dropzone.addEventListener(name, (e) => { e.preventDefault(); dropzone.classList.remove('dragover'); });
+    });
+    dropzone.addEventListener('drop', (e) => {
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        handleFile(e.dataTransfer.files[0]);
+      }
+    });
+
+    function handleFile(file) {
+      if (!file) return;
+      currentFile = file;
+      runDetection();
+    }
+
+    function setQuestion(text) {
+      document.getElementById('questionInput').value = text;
+      askQuestion();
+    }
+
+    async function runDetection() {
+      if (!currentFile) return;
+
+      const conf = document.getElementById('confSlider').value;
+      const iou = document.getElementById('iouSlider').value;
+
+      const formData = new FormData();
+      formData.append('file', currentFile);
+      formData.append('conf_threshold', conf);
+      formData.append('iou_threshold', iou);
+      formData.append('render_annotated', 'true');
+
+      document.getElementById('placeholderText').innerText = 'Detecting safety objects...';
+
+      try {
+        const res = await fetch('/api/detect', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          alert('Detection error: ' + (data.detail || 'Could not process image'));
+          return;
+        }
+
+        // Render Latency & Image
+        document.getElementById('latencyBadge').innerText = `Latency: ${data.inference_time_ms} ms`;
+        if (data.annotated_image_base64) {
+          const img = document.getElementById('annotatedImage');
+          img.src = `data:image/jpeg;base64,${data.annotated_image_base64}`;
+          img.style.display = 'block';
+          document.getElementById('placeholderText').style.display = 'none';
+        }
+
+        // Render Detections List
+        document.getElementById('detCount').innerText = data.detections_count;
+        const list = document.getElementById('detectionsList');
+        list.innerHTML = '';
+
+        if (data.detections.length === 0) {
+          list.innerHTML = '<div style="font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 1rem;">No safety objects detected at current threshold</div>';
+        } else {
+          data.detections.forEach(det => {
+            const item = document.createElement('div');
+            item.className = `detection-item ${det.is_violation ? 'violation' : ''}`;
+            item.innerHTML = `
+              <div>
+                <span class="tag-name" style="color: ${det.color}">${det.class_name}</span>
+                ${det.is_violation ? '<span style="font-size: 0.7rem; background: var(--danger); color: #fff; padding: 0.1rem 0.35rem; border-radius: 4px; margin-left: 0.4rem;">VIOLATION</span>' : ''}
+              </div>
+              <span class="tag-conf">${(det.confidence * 100).toFixed(1)}%</span>
+            `;
+            list.appendChild(item);
+          });
+        }
+
+      } catch (err) {
+        console.error(err);
+        alert('Network error connecting to /api/detect');
+      }
+    }
+
+    async function askQuestion() {
+      const q = document.getElementById('questionInput').value.trim();
+      if (!q) return;
+
+      const conf = document.getElementById('confSlider').value;
+      const iou = document.getElementById('iouSlider').value;
+      const askBtn = document.getElementById('askBtn');
+
+      askBtn.disabled = true;
+      askBtn.innerText = 'Thinking...';
+
+      const formData = new FormData();
+      formData.append('question', q);
+      if (currentFile) {
+        formData.append('file', currentFile);
+      }
+      formData.append('conf_threshold', conf);
+      formData.append('iou_threshold', iou);
+
+      try {
+        const res = await fetch('/api/ask', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          alert('Reasoning error: ' + (data.detail || 'Could not process question'));
+          return;
+        }
+
+        // Show answer card
+        const card = document.getElementById('answerCard');
+        card.style.display = 'flex';
+
+        document.getElementById('intentTag').innerText = `Intent: ${data.intent}`;
+        document.getElementById('qualityScoreTag').innerText = `Quality: ${data.guardrail.quality_score}%`;
+        document.getElementById('answerContent').innerText = data.answer;
+
+        // Trace steps
+        const trace = document.getElementById('traceContainer');
+        trace.innerHTML = '<div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.2rem;">REASONING TRACE:</div>';
+
+        data.reasoning_trace.forEach(step => {
+          const s = document.createElement('div');
+          s.className = 'trace-step';
+          s.innerHTML = `<span>Step ${step.step_number} [${step.component}]:</span> ${step.result}`;
+          trace.appendChild(s);
+        });
+
+      } catch (err) {
+        console.error(err);
+        alert('Network error connecting to /api/ask');
+      } finally {
+        askBtn.disabled = false;
+        askBtn.innerHTML = '<span>Ask</span> ➔';
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Environment / secrets
+.env
+*.env
+
+# RT-DETR training outputs
+runs/
+*.pt
+*.pth
+
+# Dataset files
+dataset/train/images/
+dataset/train/labels/
+dataset/val/images/
+dataset/val/labels/
+dataset/test/images/
+dataset/test/labels/
+
+# Ultralytics cache
+**/labels.cache
+
+# Node / React
+node_modules/
+frontend/dist/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
